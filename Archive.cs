@@ -13,21 +13,15 @@ namespace UnPSARC
         {
             Stream Reader = ArchiveRaw;
             List<string> FileNames = new List<string>();
+
             byte[] OodleLzaMagic = { 0x8C, 0x06 };
-            byte[] ZLibMagic = { 0x78, 0xDA };
-            byte[] BaseMagic = { };
+            byte[] ZLibNoMagic = { 0x78, 0x01 };
+            byte[] ZLibDefaultMagic = { 0x78, 0x9C };
+            byte[] ZLibBestMagic = { 0x78, 0xDA };
             int OffsetOFTable = 0x20;
 
             Reader.Seek(0x08, SeekOrigin.Begin);
             string CompressionType = Reader.ReadString(4);
-            if(CompressionType == "zlib")
-            {
-                BaseMagic = ZLibMagic;
-            }
-            else if (CompressionType == "oodl")
-            {
-                BaseMagic = OodleLzaMagic;
-            }
             int StartOFDatas = Reader.ReadValueS32(Endian.Big);
             int SiseOfEntry = Reader.ReadValueS32(Endian.Big);
             int FilesCount = Reader.ReadValueS32(Endian.Big);
@@ -42,16 +36,17 @@ namespace UnPSARC
                 Reader.ReadByte();                                       //A Single Byte
                 int UncompressedSize = Reader.ReadValueS32(Endian.Big);  //Real Size of file after decompression
                 Reader.ReadByte();                                       //A Single Byte
-                int OFFSET = (int)Reader.ReadValueU32(Endian.Big);
+                uint OFFSET = Reader.ReadValueU32(Endian.Big);
                 int ZEntryOffset = (ZSizeIndex * 2) + ZTableOffset;      //Offset Of ZTable Of this Entry
                 Stream MEMORY_FILE = new MemoryStream();
                 int RemainingSize = UncompressedSize;                    //this will help us in multi chunked buffers
+                Console.WriteLine(OFFSET);
                 Reader.Seek(OFFSET, SeekOrigin.Begin);
                 string Magic = BitConverter.ToString(Reader.ReadBytes(2));
                 //Check if file is compressed or not
 
                 if (UncompressedSize == 0) continue;
-                if (Magic == BitConverter.ToString(BaseMagic))
+                if (Magic == BitConverter.ToString(OodleLzaMagic) || Magic == BitConverter.ToString(ZLibNoMagic) || Magic == BitConverter.ToString(ZLibDefaultMagic) || Magic == BitConverter.ToString(ZLibBestMagic))
                 {
 
                     while (true)
@@ -72,7 +67,7 @@ namespace UnPSARC
                         {
                             if (i == 0)
                             {
-                                FileNames = new List<string>(Encoding.UTF8.GetString(StreamToByteArray(MEMORY_FILE)).Split(new[] { "\n" }, StringSplitOptions.None));
+                                FileNames = new List<string>(Encoding.UTF8.GetString(StreamToByteArray(MEMORY_FILE)).Split(new[] { "\n","\0" }, StringSplitOptions.None));
                                 break;
                             }
                             else
@@ -85,7 +80,7 @@ namespace UnPSARC
                             }
                         }
                         ZEntryOffset += 2;
-                        OFFSET += ZSize;
+                        OFFSET += (uint)ZSize;
                         RemainingSize -= ChunkSize;
                     }
                 }
@@ -95,7 +90,7 @@ namespace UnPSARC
                     MEMORY_FILE.WriteBytes(Reader.ReadAtOffset(OFFSET, UncompressedSize));       //File isn't compressed with oodle lza
                     if (i == 0)
                     {
-                        FileNames = new List<string>(Encoding.UTF8.GetString(StreamToByteArray(MEMORY_FILE)).Split(new[] { "\n" }, StringSplitOptions.None));
+                        FileNames = new List<string>(Encoding.UTF8.GetString(StreamToByteArray(MEMORY_FILE)).Split(new[] { "\n", "\0" }, StringSplitOptions.None));
                     }
                     else
                     {
@@ -115,7 +110,7 @@ namespace UnPSARC
             return MakeNum(new byte[] { 00, 00, (byte)Reader.ReadByte(), (byte)Reader.ReadByte() });
 
         }
-        public static byte[] ReadAtOffset(this Stream s, int Offset, int Size)
+        public static byte[] ReadAtOffset(this Stream s, uint Offset, int Size)
         {
             long pos = s.Position;
             s.Seek(Offset, SeekOrigin.Begin);
@@ -123,7 +118,7 @@ namespace UnPSARC
             s.Seek(pos, SeekOrigin.Begin);
             return log;
         }
-        public static byte[] ReadAtOffset(this Stream s, int Offset, int size, int ZSize , string CompressionType)
+        public static byte[] ReadAtOffset(this Stream s, uint Offset, int size, int ZSize , string CompressionType)
         {
             long pos = s.Position;
             s.Seek(Offset, SeekOrigin.Begin);
