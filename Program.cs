@@ -22,7 +22,7 @@ namespace UnPSARC
             else
             {
                 Console.WriteLine("Exporting...");
-                string folder = Path.GetDirectoryName(args[0]);
+                string folder = Directory.GetCurrentDirectory() + "\\ExportedPSARC";
                 if(args.Length >= 2) folder = args[1];
                 Stream R = File.OpenRead(args[0]);
                 Archive.Unpack(R, folder);

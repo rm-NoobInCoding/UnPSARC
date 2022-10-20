@@ -46,6 +46,7 @@ namespace UnPSARC
                     }
                     else
                     {
+                        if (!Directory.Exists(Path.GetDirectoryName(Path.Combine(Folder, FileNames[i - 1])))) Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(Folder, FileNames[i - 1])));
                         File.WriteAllBytes(Path.Combine(Folder, FileNames[i - 1]), StreamToByteArray(MEMORY_FILE));
                         Console.WriteLine(FileNames[i - 1] + " Exported...");
                     }
@@ -58,9 +59,10 @@ namespace UnPSARC
                     {
                         Reader.Seek(ZEntryOffset, SeekOrigin.Begin);
                         int ZSize = Reader.ReadZSize();
-                        if (RemainingSize < ChunkSize)
+                        if (ZSize == 0) ZSize = ChunkSize;
+                        if (RemainingSize <= ChunkSize || ZSize == ChunkSize)
                         {
-                            MEMORY_FILE.WriteBytes(Reader.ReadAtOffset(OFFSET, RemainingSize, ZSize));
+                            MEMORY_FILE.WriteBytes(Reader.ReadAtOffset(OFFSET, RemainingSize, ZSize)); //Amount of ZSIZE data remaining in final block of this file
 
                         }
                         else
@@ -69,7 +71,6 @@ namespace UnPSARC
                         }
                         if (MEMORY_FILE.Length == UncompressedSize)
                         {
-                            Console.WriteLine(i);
                             if (i == 0)
                             {
                                 FileNames = new List<string>(Encoding.UTF8.GetString(StreamToByteArray(MEMORY_FILE)).Split(new[] { "\n" }, StringSplitOptions.None));
@@ -77,13 +78,13 @@ namespace UnPSARC
                             }
                             else
                             {
+                                if (!Directory.Exists(Path.GetDirectoryName(Path.Combine(Folder, FileNames[i - 1])))) Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(Folder, FileNames[i - 1])));
                                 File.WriteAllBytes(Path.Combine(Folder, FileNames[i - 1]), StreamToByteArray(MEMORY_FILE));
                                 Console.WriteLine(FileNames[i - 1] + " Exported...");
                                 MEMORY_FILE.Close();
                                 break;
                             }
                         }
-
                         ZEntryOffset += 2;
                         OFFSET += ZSize;
                         RemainingSize -= ChunkSize;
@@ -111,7 +112,9 @@ namespace UnPSARC
         {
             long pos = s.Position;
             s.Seek(Offset, SeekOrigin.Begin);
-            byte[] log = Oodle.Decompress(s.ReadBytes(ZSize), size);
+            byte[] Block = s.ReadBytes(ZSize);
+            byte[] log = Oodle.Decompress(Block, size);
+            if (log.Length == 0) log = Block;
             s.Seek(pos, SeekOrigin.Begin);
             return log;
         }
