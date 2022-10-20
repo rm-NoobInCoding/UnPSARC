@@ -15,23 +15,29 @@ namespace UnPSARC
             List<string> FileNames = new List<string>();
 
             int OffsetOFTable = 0x20;
+            Stream ArchiveData = new MemoryStream();
+
+            //Write Header Data in ArchiveData
+            ArchiveData.WriteBytes(Reader.ReadBytes(24));
+            Reader.Seek(0, SeekOrigin.Begin);
 
             //Read Header
             string ArchiveMagic = Reader.ReadString(4); //PSARC
-            short MajorVersion = Reader.ReadValueS16();
-            short MinorVersion = Reader.ReadValueS16();
-            string CompressionType = Reader.ReadString(4);
+            ushort MajorVersion = Reader.ReadValueU16();
+            ushort MinorVersion = Reader.ReadValueU16();
+            string CompressionType = Reader.ReadString(4); //oodle Or zlib
             int StartOFDatas = Reader.ReadValueS32(Endian.Big);
             int SiseOfEntry = Reader.ReadValueS32(Endian.Big);
             int FilesCount = Reader.ReadValueS32(Endian.Big);
             int ChunkSize = Reader.ReadValueS32(Endian.Big);
             int ZTableOffset = (FilesCount * SiseOfEntry) + OffsetOFTable; //ZTable is after Files Entry
 
+             
             for (int i = 0; i < FilesCount; i++)
             {
                 //Read Entry
                 Reader.Seek(OffsetOFTable, SeekOrigin.Begin);
-                Reader.ReadBytes(0x10); //Maybe Hash Names
+                byte[] HashNames = Reader.ReadBytes(0x10); //Maybe Hash Names
                 int ZSizeIndex = Reader.ReadValueS32(Endian.Big); //Index Of ZSize In ZSizeTable
                 Reader.ReadByte(); //A Single Byte
                 int UncompressedSize = Reader.ReadValueS32(Endian.Big);//Real Size of file after decompression
@@ -41,7 +47,7 @@ namespace UnPSARC
                 int ZEntryOffset = (ZSizeIndex * 2) + ZTableOffset; //Offset of ZTable of this entry
                 Stream MEMORY_FILE = new MemoryStream(); //just a memory for save decompressed chunks
                 int RemainingSize = UncompressedSize; //this will help us in multi chunked buffers
-
+                ArchiveData.WriteBytes(HashNames);
                 //Check if file is compressed or not
                 if (Reader.CheckIfCompressed(OFFSET)) 
                 {
@@ -101,6 +107,7 @@ namespace UnPSARC
                 }
                 OffsetOFTable += SiseOfEntry;
             }
+            File.WriteAllBytes(Path.Combine(Folder, "PSARC_Archive.data"),ArchiveData.ToByteArray());
         }
     }
 }
