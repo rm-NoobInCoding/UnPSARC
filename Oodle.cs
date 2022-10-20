@@ -3,7 +3,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 
 // credit: https://github.com/Crauzer/OodleSharp
-// I added 32-bit support and cleaned up the code
 
 namespace OodleSharp
 {
@@ -39,30 +38,18 @@ namespace OodleSharp
 
     public static class Oodle
     {
-#if WIN32
-        [DllImport("oo2core_6_win32.dll", EntryPoint = "_OodleLZ_Compress@40")]
-        private static extern int OodleLZ_Compress(int algo, byte[] inBuf, int inSize, byte[] outBuf, int max, int a, int b, int c, int d, int e);
-
-        [DllImport("oo2core_6_win32.dll", EntryPoint = "_OodleLZ_Decompress@56")]
-        private static extern int OodleLZ_Decompress(byte[] inBuf, int inSize, byte[] outBuf, int outSize, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
-#else
         [DllImport("oo2core_9_win64.dll")]
         private static extern int OodleLZ_Compress(OodleFormat format, byte[] buffer, long bufferSize, byte[] outputBuffer, OodleCompressionLevel level, uint unused1, uint unused2, uint unused3);
 
         [DllImport("oo2core_9_win64.dll")]
         private static extern int OodleLZ_Decompress(byte[] buffer, long bufferSize, byte[] outputBuffer, long outputBufferSize, uint a, uint b, ulong c, uint d, uint e, uint f, uint g, uint h, uint i, uint threadModule);
-#endif
 
         public static byte[] Compress(byte[] buffer, int size, OodleFormat format, OodleCompressionLevel level)
         {
             uint compressedBufferSize = GetCompressionBound((uint)size);
             byte[] compressedBuffer = new byte[compressedBufferSize];
 
-#if WIN32
-            int compressedCount = OodleLZ_Compress((int)format, buffer, size, compressedBuffer, (int)level, 0, 0, 0, 0, 0);
-#else
             int compressedCount = OodleLZ_Compress(format, buffer, size, compressedBuffer, level, 0, 0, 0);
-#endif
 
             byte[] outputBuffer = new byte[compressedCount];
             Buffer.BlockCopy(compressedBuffer, 0, outputBuffer, 0, compressedCount);
@@ -74,11 +61,7 @@ namespace OodleSharp
         {
             byte[] decompressedBuffer = new byte[uncompressedSize];
 
-#if WIN32
             int decompressedCount = OodleLZ_Decompress(buffer, buffer.Length, decompressedBuffer, uncompressedSize, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3);
-#else
-            int decompressedCount = OodleLZ_Decompress(buffer, buffer.Length, decompressedBuffer, uncompressedSize, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3);
-#endif
 
             // if decompressed size and uncompressed size match, the data was not compressed from the start
             if (decompressedCount == uncompressedSize)
