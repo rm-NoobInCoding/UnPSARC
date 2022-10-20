@@ -30,11 +30,7 @@ namespace UnPSARC
 
             for (int i = 0; i < FilesCount; i++)
             {
-                if(i < 2956 && i!= 0)
-                {
-                    OffsetOFTable += SiseOfEntry;
-                    continue;
-                }
+
                 Reader.Seek(OffsetOFTable, SeekOrigin.Begin);
                 Reader.ReadBytes(0x10);                                  //Maybe Hash Names
                 int ZSizeIndex = Reader.ReadValueS32(Endian.Big);        //Index Of ZSize In ZSizeTable
