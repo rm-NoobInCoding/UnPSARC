@@ -8,8 +8,11 @@ using System.IO;
 
 namespace UnPSARC
 {
-    public class Zlib
+    public static class Zlib
     {
+        public static byte[] ZLibNoMagic = { 0x78, 0x01 };
+        public static byte[] ZLibDefaultMagic = { 0x78, 0x9C };
+        public static byte[] ZLibBestMagic = { 0x78, 0xDA };
         public static byte[] Decompress(byte[] Data , int decompsize)
         {
             MemoryStream input = new MemoryStream(Data);

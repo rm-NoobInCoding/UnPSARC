@@ -4,8 +4,9 @@ using System.Runtime.InteropServices;
 
 // credit: https://github.com/Crauzer/OodleSharp
 
-namespace OodleSharp
+namespace UnPSARC
 {
+
     public enum OodleFormat : uint
     {
         LZH,
@@ -38,6 +39,10 @@ namespace OodleSharp
 
     public static class Oodle
     {
+        public static byte[] OodleLzaMagic = { 0x8C, 0x06 };
+
+        [DllImport("oo2core_9_win64.dll")]
+        public static extern int GetCompressedBufferSizeNeeded(long rawSize);
         [DllImport("oo2core_9_win64.dll")]
         private static extern int OodleLZ_Compress(OodleFormat format, byte[] buffer, long bufferSize, byte[] outputBuffer, OodleCompressionLevel level, uint unused1, uint unused2, uint unused3);
 
@@ -87,5 +92,17 @@ namespace OodleSharp
             }
             return v2;
         }*/
+        /// <summary>
+        /// Gets the max buffer size needed for oodle compression
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static int GetCompressedBufferSizeNeeded(int count)
+        {
+            var n = (((count + 0x3ffff + ((uint)((count + 0x3ffff) >> 0x3f) & 0x3ffff))
+                     >> 0x12) * 0x112) + count;
+            //var n  = OodleNative.GetCompressedBufferSizeNeeded((long)count);
+            return (int)n;
+        }
     }
 }
