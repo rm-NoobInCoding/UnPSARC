@@ -14,8 +14,20 @@ namespace UnPSARC
             Stream Reader = ArchiveRaw;
             List<string> FileNames = new List<string>();
             byte[] OodleLzaMagic = { 0x8C, 0x06 };
+            byte[] ZLibMagic = { 0x78, 0xDA };
+            byte[] BaseMagic = { };
             int OffsetOFTable = 0x20;
-            Reader.Seek(0x0c, SeekOrigin.Begin);
+
+            Reader.Seek(0x08, SeekOrigin.Begin);
+            string CompressionType = Reader.ReadString(4);
+            if(CompressionType == "zlib")
+            {
+                BaseMagic = ZLibMagic;
+            }
+            else if (CompressionType == "oodl")
+            {
+                BaseMagic = OodleLzaMagic;
+            }
             int StartOFDatas = Reader.ReadValueS32(Endian.Big);
             int SiseOfEntry = Reader.ReadValueS32(Endian.Big);
             int FilesCount = Reader.ReadValueS32(Endian.Big);
@@ -35,24 +47,11 @@ namespace UnPSARC
                 Stream MEMORY_FILE = new MemoryStream();
                 int RemainingSize = UncompressedSize;                    //this will help us in multi chunked buffers
                 Reader.Seek(OFFSET, SeekOrigin.Begin);
-
+                string Magic = BitConverter.ToString(Reader.ReadBytes(2));
                 //Check if file is compressed or not
-                if (BitConverter.ToString(Reader.ReadBytes(2)) != BitConverter.ToString(OodleLzaMagic))
-                {
-                    MEMORY_FILE.WriteBytes(Reader.ReadAtOffset(OFFSET, UncompressedSize));       //File isn't compressed with oodle lza
-                    if (i == 0)
-                    {
-                        FileNames = new List<string>(Encoding.UTF8.GetString(StreamToByteArray(MEMORY_FILE)).Split(new[] { "\n" }, StringSplitOptions.None));
-                    }
-                    else
-                    {
-                        if (!Directory.Exists(Path.GetDirectoryName(Path.Combine(Folder, FileNames[i - 1])))) Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(Folder, FileNames[i - 1])));
-                        File.WriteAllBytes(Path.Combine(Folder, FileNames[i - 1]), StreamToByteArray(MEMORY_FILE));
-                        Console.WriteLine(FileNames[i - 1] + " Exported...");
-                    }
 
-                }
-                else
+                if (UncompressedSize == 0) continue;
+                if (Magic == BitConverter.ToString(BaseMagic))
                 {
 
                     while (true)
@@ -62,12 +61,12 @@ namespace UnPSARC
                         if (ZSize == 0) ZSize = ChunkSize;
                         if (RemainingSize <= ChunkSize || ZSize == ChunkSize)
                         {
-                            MEMORY_FILE.WriteBytes(Reader.ReadAtOffset(OFFSET, RemainingSize, ZSize)); //Amount of ZSIZE data remaining in final block of this file
+                            MEMORY_FILE.WriteBytes(Reader.ReadAtOffset(OFFSET, RemainingSize, ZSize , CompressionType)); //Amount of ZSIZE data remaining in final block of this file
 
                         }
                         else
                         {
-                            MEMORY_FILE.WriteBytes(Reader.ReadAtOffset(OFFSET, ChunkSize, ZSize));
+                            MEMORY_FILE.WriteBytes(Reader.ReadAtOffset(OFFSET, ChunkSize, ZSize, CompressionType));
                         }
                         if (MEMORY_FILE.Length == UncompressedSize)
                         {
@@ -90,6 +89,22 @@ namespace UnPSARC
                         RemainingSize -= ChunkSize;
                     }
                 }
+                else
+                {
+        
+                    MEMORY_FILE.WriteBytes(Reader.ReadAtOffset(OFFSET, UncompressedSize));       //File isn't compressed with oodle lza
+                    if (i == 0)
+                    {
+                        FileNames = new List<string>(Encoding.UTF8.GetString(StreamToByteArray(MEMORY_FILE)).Split(new[] { "\n" }, StringSplitOptions.None));
+                    }
+                    else
+                    {
+                        if (!Directory.Exists(Path.GetDirectoryName(Path.Combine(Folder, FileNames[i - 1])))) Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(Folder, FileNames[i - 1])));
+                        File.WriteAllBytes(Path.Combine(Folder, FileNames[i - 1]), StreamToByteArray(MEMORY_FILE));
+                        Console.WriteLine(FileNames[i - 1] + " Exported...");
+                    }
+
+                }
                 OffsetOFTable += SiseOfEntry;
             }
 
@@ -108,12 +123,14 @@ namespace UnPSARC
             s.Seek(pos, SeekOrigin.Begin);
             return log;
         }
-        public static byte[] ReadAtOffset(this Stream s, int Offset, int size, int ZSize)
+        public static byte[] ReadAtOffset(this Stream s, int Offset, int size, int ZSize , string CompressionType)
         {
             long pos = s.Position;
             s.Seek(Offset, SeekOrigin.Begin);
             byte[] Block = s.ReadBytes(ZSize);
-            byte[] log = Oodle.Decompress(Block, size);
+            byte[] log = { };
+            if (CompressionType == "oodl") log = Oodle.Decompress(Block, size);
+            if (CompressionType == "zlib") log = Zlib.Decompress(Block, size);
             if (log.Length == 0) log = Block;
             s.Seek(pos, SeekOrigin.Begin);
             return log;
