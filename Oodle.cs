@@ -46,10 +46,10 @@ namespace OodleSharp
         [DllImport("oo2core_6_win32.dll", EntryPoint = "_OodleLZ_Decompress@56")]
         private static extern int OodleLZ_Decompress(byte[] inBuf, int inSize, byte[] outBuf, int outSize, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 #else
-        [DllImport("oo2core_7_win64.dll")]
+        [DllImport("oo2core_9_win64.dll")]
         private static extern int OodleLZ_Compress(OodleFormat format, byte[] buffer, long bufferSize, byte[] outputBuffer, OodleCompressionLevel level, uint unused1, uint unused2, uint unused3);
 
-        [DllImport("oo2core_7_win64.dll")]
+        [DllImport("oo2core_9_win64.dll")]
         private static extern int OodleLZ_Decompress(byte[] buffer, long bufferSize, byte[] outputBuffer, long outputBufferSize, uint a, uint b, ulong c, uint d, uint e, uint f, uint g, uint h, uint i, uint threadModule);
 #endif
 

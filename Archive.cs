@@ -1,78 +1,105 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gibbed.IO;
-using System.IO;
+﻿using Gibbed.IO;
 using OodleSharp;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace UnPSARC
 {
     public static class Archive
     {
-        public static void Unpack(byte[] ArchiveRaw)
+        public static void Unpack(Stream ArchiveRaw, string Folder)
         {
-            Stream Reader = new MemoryStream(ArchiveRaw);
+            Stream Reader = ArchiveRaw;
             List<string> FileNames = new List<string>();
-            int TABLE = 0x20;
-            Reader.Seek(0x0c,SeekOrigin.Begin);
-            int DATA_START = Reader.ReadValueS32(Endian.Big);
-            int ENTRY_SIZE = Reader.ReadValueS32(Endian.Big);
-            int FILES = Reader.ReadValueS32(Endian.Big);
-            int BLOCK_SIZE = Reader.ReadValueS32(Endian.Big);
-            int ZTableOffset = (FILES * ENTRY_SIZE) + TABLE;
-            for (int i = 0; i < FILES; i++)
+            byte[] OodleLzaMagic = { 0x8C, 0x06 };
+            int OffsetOFTable = 0x20;
+            Reader.Seek(0x0c, SeekOrigin.Begin);
+            int StartOFDatas = Reader.ReadValueS32(Endian.Big);
+            int SiseOfEntry = Reader.ReadValueS32(Endian.Big);
+            int FilesCount = Reader.ReadValueS32(Endian.Big);
+            int ChunkSize = Reader.ReadValueS32(Endian.Big);
+            int ZTableOffset = (FilesCount * SiseOfEntry) + OffsetOFTable; //ZTable is after Files Entry
+
+            for (int i = 0; i < FilesCount; i++)
             {
-                Reader.Seek(TABLE, SeekOrigin.Begin);
-                //Console.WriteLine(Reader.Position);
-                byte[] Junk = Reader.ReadBytes(0x10);
-                int START_BLOCK = Reader.ReadValueS32(Endian.Big);
-                
-                Reader.ReadByte();
-                int TOTAL_SIZE = Reader.ReadValueS32(Endian.Big);
-                Reader.ReadByte();
+                Reader.Seek(OffsetOFTable, SeekOrigin.Begin);
+                Reader.ReadBytes(0x10);                                  //Maybe Hash Names
+                int ZSizeIndex = Reader.ReadValueS32(Endian.Big);        //Index Of ZSize In ZSizeTable
+                Reader.ReadByte();                                       //A Single Byte
+                int UncompressedSize = Reader.ReadValueS32(Endian.Big);  //Real Size of file after decompression
+                Reader.ReadByte();                                       //A Single Byte
                 int OFFSET = Reader.ReadValueS32(Endian.Big);
-                int ZEntryOffset = (START_BLOCK * 2) + ZTableOffset;
+                int ZEntryOffset = (ZSizeIndex * 2) + ZTableOffset;      //OffsetOfZ
                 Stream MEMORY_FILE = new MemoryStream();
-                int TEMP2 = TOTAL_SIZE;
+                int RemainingSize = UncompressedSize;                    //this will help us in multi chunked buffers
                 Reader.Seek(OFFSET, SeekOrigin.Begin);
-                byte[] MISC1 = Reader.ReadBytes(2);
-                if (BitConverter.ToString(MISC1) != "8C-06")
+
+                //Check if file is compressed or not
+                if (BitConverter.ToString(Reader.ReadBytes(2)) != BitConverter.ToString(OodleLzaMagic))
                 {
-                    Log(Reader, OFFSET, TOTAL_SIZE);
+                    MEMORY_FILE.WriteBytes(Reader.ReadAtOffset(OFFSET, UncompressedSize));       //File isn't compressed with oodle lza
+                    if (i == 0)
+                    {
+                        FileNames = new List<string>(Encoding.UTF8.GetString(StreamToByteArray(MEMORY_FILE)).Split(new[] { "\n" }, StringSplitOptions.None));
+                    }
+                    else
+                    {
+                        File.WriteAllBytes(Path.Combine(Folder, FileNames[i - 1]), StreamToByteArray(MEMORY_FILE));
+                        Console.WriteLine(FileNames[i - 1] + " Exported...");
+                    }
+
                 }
                 else
                 {
+
                     while (true)
                     {
                         Reader.Seek(ZEntryOffset, SeekOrigin.Begin);
-                        int ZSize = MakeNum(new byte[] { 00 , 00 , (byte)Reader.ReadByte() , (byte)Reader.ReadByte() });
-                        if (TEMP2 < BLOCK_SIZE)
+                        int ZSize = Reader.ReadZSize();
+                        if (RemainingSize < ChunkSize)
                         {
-                            MEMORY_FILE.WriteBytes(CLog(Reader, OFFSET, ZSize, TEMP2));
+                            MEMORY_FILE.WriteBytes(Reader.ReadAtOffset(OFFSET, RemainingSize, ZSize));
+
                         }
                         else
                         {
-                            MEMORY_FILE.WriteBytes(CLog(Reader, OFFSET, ZSize, BLOCK_SIZE));
+                            MEMORY_FILE.WriteBytes(Reader.ReadAtOffset(OFFSET, ChunkSize, ZSize));
                         }
-                        if (MEMORY_FILE.Length == TOTAL_SIZE)
+                        if (MEMORY_FILE.Length == UncompressedSize)
                         {
-                            File.WriteAllBytes(i + ".dat", StreamToByteArray(MEMORY_FILE));
-
-                            MEMORY_FILE.SetLength(0);
-                            break;
+                            Console.WriteLine(i);
+                            if (i == 0)
+                            {
+                                FileNames = new List<string>(Encoding.UTF8.GetString(StreamToByteArray(MEMORY_FILE)).Split(new[] { "\n" }, StringSplitOptions.None));
+                                break;
+                            }
+                            else
+                            {
+                                File.WriteAllBytes(Path.Combine(Folder, FileNames[i - 1]), StreamToByteArray(MEMORY_FILE));
+                                Console.WriteLine(FileNames[i - 1] + " Exported...");
+                                MEMORY_FILE.Close();
+                                break;
+                            }
                         }
+
                         ZEntryOffset += 2;
                         OFFSET += ZSize;
-                        TEMP2 -= BLOCK_SIZE;
+                        RemainingSize -= ChunkSize;
                     }
                 }
-                TABLE += ENTRY_SIZE;
+                OffsetOFTable += SiseOfEntry;
             }
 
+
         }
-        public static byte[] Log(Stream s, int Offset , int Size)
+        public static int ReadZSize(this Stream Reader)
+        {
+            return MakeNum(new byte[] { 00, 00, (byte)Reader.ReadByte(), (byte)Reader.ReadByte() });
+
+        }
+        public static byte[] ReadAtOffset(this Stream s, int Offset, int Size)
         {
             long pos = s.Position;
             s.Seek(Offset, SeekOrigin.Begin);
@@ -80,7 +107,7 @@ namespace UnPSARC
             s.Seek(pos, SeekOrigin.Begin);
             return log;
         }
-        public static byte[] CLog(this Stream s, int Offset, int ZSize , int size)
+        public static byte[] ReadAtOffset(this Stream s, int Offset, int size, int ZSize)
         {
             long pos = s.Position;
             s.Seek(Offset, SeekOrigin.Begin);
