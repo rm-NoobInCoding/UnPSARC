@@ -30,22 +30,22 @@ namespace UnPSARC
 
             for (int i = 0; i < FilesCount; i++)
             {
+
                 Reader.Seek(OffsetOFTable, SeekOrigin.Begin);
                 Reader.ReadBytes(0x10);                                  //Maybe Hash Names
                 int ZSizeIndex = Reader.ReadValueS32(Endian.Big);        //Index Of ZSize In ZSizeTable
                 Reader.ReadByte();                                       //A Single Byte
                 int UncompressedSize = Reader.ReadValueS32(Endian.Big);  //Real Size of file after decompression
+                if (UncompressedSize == 0) continue;                     //Some Files have 0 size so better to ignore them!
                 Reader.ReadByte();                                       //A Single Byte
-                uint OFFSET = Reader.ReadValueU32(Endian.Big);
+                long OFFSET = Reader.ReadValueU32(Endian.Big);
                 int ZEntryOffset = (ZSizeIndex * 2) + ZTableOffset;      //Offset Of ZTable Of this Entry
                 Stream MEMORY_FILE = new MemoryStream();
                 int RemainingSize = UncompressedSize;                    //this will help us in multi chunked buffers
-                Console.WriteLine(OFFSET);
                 Reader.Seek(OFFSET, SeekOrigin.Begin);
                 string Magic = BitConverter.ToString(Reader.ReadBytes(2));
                 //Check if file is compressed or not
 
-                if (UncompressedSize == 0) continue;
                 if (Magic == BitConverter.ToString(OodleLzaMagic) || Magic == BitConverter.ToString(ZLibNoMagic) || Magic == BitConverter.ToString(ZLibDefaultMagic) || Magic == BitConverter.ToString(ZLibBestMagic))
                 {
 
@@ -54,7 +54,7 @@ namespace UnPSARC
                         Reader.Seek(ZEntryOffset, SeekOrigin.Begin);
                         int ZSize = Reader.ReadZSize();
                         if (ZSize == 0) ZSize = ChunkSize;
-                        if (RemainingSize <= ChunkSize || ZSize == ChunkSize)
+                        if (RemainingSize < ChunkSize || ZSize == ChunkSize)
                         {
                             MEMORY_FILE.WriteBytes(Reader.ReadAtOffset(OFFSET, RemainingSize, ZSize , CompressionType)); //Amount of ZSIZE data remaining in final block of this file
 
@@ -79,6 +79,7 @@ namespace UnPSARC
                                 break;
                             }
                         }
+                        
                         ZEntryOffset += 2;
                         OFFSET += (uint)ZSize;
                         RemainingSize -= ChunkSize;
@@ -110,7 +111,7 @@ namespace UnPSARC
             return MakeNum(new byte[] { 00, 00, (byte)Reader.ReadByte(), (byte)Reader.ReadByte() });
 
         }
-        public static byte[] ReadAtOffset(this Stream s, uint Offset, int Size)
+        public static byte[] ReadAtOffset(this Stream s, long Offset, int Size)
         {
             long pos = s.Position;
             s.Seek(Offset, SeekOrigin.Begin);
@@ -118,7 +119,7 @@ namespace UnPSARC
             s.Seek(pos, SeekOrigin.Begin);
             return log;
         }
-        public static byte[] ReadAtOffset(this Stream s, uint Offset, int size, int ZSize , string CompressionType)
+        public static byte[] ReadAtOffset(this Stream s, long Offset, int size, int ZSize , string CompressionType)
         {
             long pos = s.Position;
             s.Seek(Offset, SeekOrigin.Begin);
