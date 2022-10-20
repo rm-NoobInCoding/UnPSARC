@@ -30,8 +30,8 @@ namespace UnPSARC
                 Reader.ReadByte();                                       //A Single Byte
                 int UncompressedSize = Reader.ReadValueS32(Endian.Big);  //Real Size of file after decompression
                 Reader.ReadByte();                                       //A Single Byte
-                int OFFSET = Reader.ReadValueS32(Endian.Big);
-                int ZEntryOffset = (ZSizeIndex * 2) + ZTableOffset;      //OffsetOfZ
+                int OFFSET = (int)Reader.ReadValueU32(Endian.Big);
+                int ZEntryOffset = (ZSizeIndex * 2) + ZTableOffset;      //Offset Of ZTable Of this Entry
                 Stream MEMORY_FILE = new MemoryStream();
                 int RemainingSize = UncompressedSize;                    //this will help us in multi chunked buffers
                 Reader.Seek(OFFSET, SeekOrigin.Begin);

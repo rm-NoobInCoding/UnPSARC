@@ -21,12 +21,22 @@ namespace UnPSARC
             }
             else
             {
-                Console.WriteLine("Exporting...");
-                string folder = Directory.GetCurrentDirectory() + "\\ExportedPSARC";
-                if(args.Length >= 2) folder = args[1];
-                Stream R = File.OpenRead(args[0]);
-                Archive.Unpack(R, folder);
-                R.Close();
+                if(Path.GetExtension(args[0]) == ".psarc")
+                {
+                    Console.WriteLine("Exporting...");
+                    string folder = Directory.GetCurrentDirectory() + "\\" + Path.GetFileNameWithoutExtension(args[0]) + "_Unpacked";
+                    if (args.Length >= 2) folder = args[1];
+                    Stream R = File.OpenRead(args[0]);
+                    Archive.Unpack(R, folder);
+                    R.Close();
+                }
+                else
+                {
+                    Console.WriteLine("Usage:");
+                    Console.WriteLine("Unpsarc.exe <psarc path> [destination folder]");
+                    Console.ReadLine();
+                }
+                
             }
 
             
