@@ -19,6 +19,7 @@ namespace UnPSARC
         public int FilesCount;
         public int ZSizeCount;
         public int BlockSize;
+        private int Zero;
         public TEntry[] Entries;
         public TZSize[] ZSizes;
         List<string> FileNames = new List<string>();
@@ -30,7 +31,8 @@ namespace UnPSARC
         }
         public PSARC(Stream Reader,Stream Writer)
         {
-            
+            this.Reader = Reader;
+            this.Writer = Writer;
         }
         public void Read()
         {
@@ -46,7 +48,7 @@ namespace UnPSARC
             FilesCount = Reader.ReadValueS32(Endian.Big);
             ZSizeCount = (StartOFDatas - (SiseOfEntry * FilesCount) + 32) / 2;
             BlockSize = Reader.ReadValueS32(Endian.Big);
-            Reader.ReadValueS32(Endian.Big); //Always Zero
+            Zero = Reader.ReadValueS32(Endian.Big); //Always Zero
             Entries = new TEntry[FilesCount];
             for (int index = 0; index < FilesCount; ++index)
             {
@@ -61,6 +63,26 @@ namespace UnPSARC
                 tzsize.Read(Reader);
                 ZSizes[index] = tzsize;
             }
+
+        }
+        public void Write()
+        {
+            Writer.SetLength(0);
+            Writer.Seek(0, SeekOrigin.Begin);
+            Writer.WriteString(ArchiveMagic);
+            Writer.WriteValueU16(MajorVersion, Endian.Big);
+            Writer.WriteValueU16(MinorVersion, Endian.Big);
+            Writer.WriteString(CompressionType);
+            Writer.WriteValueS32(StartOFDatas, Endian.Big);
+            Writer.WriteValueS32(SiseOfEntry, Endian.Big);
+            Writer.WriteValueS32(FilesCount, Endian.Big);
+            Writer.WriteValueS32(BlockSize, Endian.Big);
+            Writer.WriteValueS32(Zero, Endian.Big);
+            for (int index = 0; index < Entries.Length; ++index)
+                Entries[index].Write(Writer);
+            for (int index = 0; index < ZSizes.Length; ++index)
+                ZSizes[index].Write(Writer);
+
 
         }
 
