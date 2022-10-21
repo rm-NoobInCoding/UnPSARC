@@ -95,6 +95,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Compression\Zlib.cs" />
+    <Compile Include="Core\PSARC.cs" />
+    <Compile Include="Core\TEntry.cs" />
+    <Compile Include="Core\TZSize.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -74,7 +74,9 @@ namespace UnPSARC
                     if (outputDirectory == null)
                     {
                         //build the directory on the same folder where the input file is stored.
-                        string customOutputDirectory = Path.GetDirectoryName(args[0]) + "\\" + Path.GetFileNameWithoutExtension(args[0]) + "_Unpacked";
+                        string TempDir = Path.GetDirectoryName(args[0]);
+                        if (TempDir == "") TempDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                        string customOutputDirectory = TempDir + "\\" + Path.GetFileNameWithoutExtension(args[0]) + "_Unpacked";
 
                         //if it doesn't exist then build the directory on the disk.
                         if (Directory.Exists(customOutputDirectory) == false)
