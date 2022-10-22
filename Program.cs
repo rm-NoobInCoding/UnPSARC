@@ -25,9 +25,10 @@ namespace UnPSARC
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Uncharted 4 PC Extractor");
+            Console.WriteLine("UnPSARC (PSARC Archive Tool For Uncharted4 PC)");
             Console.WriteLine("By NoobInCoding");
-
+            Console.WriteLine("https://github.com/rm-NoobInCoding/UnPSARC");
+            Console.WriteLine("");
             //if there are no arguments given, print the usage of the app and don't continue
             if (args.Length < 1)
             {
@@ -128,7 +129,7 @@ namespace UnPSARC
             else //user didn't specify or have avalid input argument path, so just print the usage of the program to remind them...
             {
                 //instead of printing just the usage, tell them what they did wrong for good ux.
-                Console.WriteLine("Input path argument is not a valid file/directory, or does not exist! Make sure your path is in quotation marks)");
+                Console.WriteLine("Input path argument is not a valid file/directory, or does not exist! (Make sure your path is in quotation marks)");
                 PrintUsage();
             }
         }
