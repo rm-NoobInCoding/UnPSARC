@@ -39,7 +39,6 @@ namespace UnPSARC
 
     public static class Oodle
     {
-        public static byte[] OodleLzaMagic = { 0x8C, 0x06 };
 
         [DllImport("oo2core_9_win64.dll")]
         public static extern int GetCompressedBufferSizeNeeded(long rawSize);
