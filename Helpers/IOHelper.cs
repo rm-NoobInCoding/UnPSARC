@@ -17,12 +17,15 @@ namespace UnPSARC
         }
         public static byte[] ReadAtOffset(this Stream s, long Offset, int size, int ZSize, string CompressionType)
         {
+            
             long pos = s.Position;
+            s.Seek(Offset, SeekOrigin.Begin);
+            int magic = s.ReadValueU16();
             s.Seek(Offset, SeekOrigin.Begin);
             byte[] Block = s.ReadBytes(ZSize);
             byte[] log = { };
-            if (CompressionType == "oodl") log = Oodle.Decompress(Block, size);
-            if (CompressionType == "zlib") log = Zlib.Decompress(Block, size);
+            if (CompressionType == "oodl" && magic == 0x68C) log = Oodle.Decompress(Block, size);
+            if (CompressionType == "zlib" && magic == 0xDA78) log = Zlib.Decompress(Block);
             if (log.Length == 0) log = Block;
             s.Seek(pos, SeekOrigin.Begin);
             return log;
@@ -36,18 +39,12 @@ namespace UnPSARC
                 return ms.ToArray();
             }
         }
-        public static bool CheckIfCompressed(this Stream Reader, long offset)
+        public static void CheckFolderExists(string filename, string basefolder)
         {
-            long pos = Reader.Position;
-            Reader.Seek(offset, SeekOrigin.Begin);
-            byte[] Magic = Reader.ReadBytes(2);
-            Reader.Seek(pos, SeekOrigin.Begin);
-            if (Magic.SequenceEqual(Oodle.OodleLzaMagic) || Magic.SequenceEqual(Zlib.ZLibNoMagic) || Magic.SequenceEqual(Zlib.ZLibDefaultMagic) || Magic.SequenceEqual(Zlib.ZLibBestMagic))
+            if (!Directory.Exists(Path.GetDirectoryName(Path.Combine(basefolder, filename))))
             {
-                return true;
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(basefolder, filename)));
             }
-            return false;
-
         }
     }
 }
