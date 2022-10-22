@@ -8,13 +8,14 @@ using Gibbed.IO;
 
 namespace UnPSARC
 {
-    internal class TEntry
+    public class TEntry
     {
         private int index;
         public byte[] HashNames;
         public int ZSizeIndex;
         public int UncompressedSize;
         public long Offset;
+        public byte[] OverwriteBuffer = { };
         private int Unk1; //maybe always zero?
         private int Unk2;
         public TEntry(int index) => this.index = index;

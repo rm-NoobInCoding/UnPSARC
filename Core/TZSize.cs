@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace UnPSARC
 {
-    internal class TZSize
+    public class TZSize
     {
         private int index;
         public int ZSize;
