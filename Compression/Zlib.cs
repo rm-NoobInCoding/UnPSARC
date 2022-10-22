@@ -1,25 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ionic.Zlib;
+using System.IO.Compression;
 using System.IO;
 
 namespace UnPSARC
 {
     public static class Zlib
     {
-        public static byte[] ZLibNoMagic = { 0x78, 0x01 };
-        public static byte[] ZLibDefaultMagic = { 0x78, 0x9C };
-        public static byte[] ZLibBestMagic = { 0x78, 0xDA };
-        public static byte[] Decompress(byte[] Data , int decompsize)
+        public static byte[] Decompress(byte[] Data)
         {
             MemoryStream input = new MemoryStream(Data);
             MemoryStream output = new MemoryStream();
-            using (ZlibStream zlib = new ZlibStream(input, CompressionMode.Decompress))
+            input.Position = 2;
+            using (DeflateStream zlib = new DeflateStream(input, CompressionMode.Decompress, false))
             {
                 zlib.CopyTo(output);
+                zlib.Dispose();
             }
 
             return output.ToArray();
