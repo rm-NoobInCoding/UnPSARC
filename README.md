@@ -1,11 +1,16 @@
 # UnPSARC
-Archive Unpacker For Uncharted Legacy Of Thieves Collection PC Version
+Archive Unpacker For PlayStation Archive files (PSARC) that mostly used by Naughty Dog.
 
 
 
 ## What does this tool do? ##
-UnPSARC tool helps you to extract the contents of Uncharted Legacy Of Thieves Collection PC Version game archives
+UnPSARC tool helps you to extract the contents of PlayStation Archive file
 
+
+## Tested Games ##
+-All versions of Uncharted (PS3 Not tested)
+-All versions of Last Of Us (PS3 Not tested)
+(Other games that use psarc format will probably be compatible)
 
 
 ## How to use it ##
