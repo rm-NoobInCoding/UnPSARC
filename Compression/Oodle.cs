@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 
-// credit: https://github.com/Crauzer/OodleSharp
-
 namespace UnPSARC
 {
 
@@ -18,8 +16,6 @@ namespace UnPSARC
             byte[] decompressedBuffer = new byte[uncompressedSize];
 
             int decompressedCount = OodleLZ_Decompress(buffer, buffer.Length, decompressedBuffer, uncompressedSize, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3);
-
-            // if decompressed size and uncompressed size match, the data was not compressed from the start
             if (decompressedCount == uncompressedSize)
                 return decompressedBuffer;
             else if (decompressedCount < uncompressedSize)

@@ -1,19 +1,17 @@
-﻿using System;
+﻿using Gibbed.IO;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using Gibbed.IO;
+using System.Text;
 
 namespace UnPSARC
 {
     internal class PSARC
     {
-        private string ArchiveMagic; //PSARC
+        private string ArchiveMagic;
         private ushort MajorVersion;
         private ushort MinorVersion;
-        public string CompressionType; //oodle Or zlib
+        public string CompressionType;
         public int StartOFDatas;
         public int SizeOfEntry;
         public int FilesCount;
@@ -22,14 +20,14 @@ namespace UnPSARC
         private int Zero;
         public TEntry[] Entries;
         public TZSize[] ZSizes;
-        public List<string> FileNames;
+        public Dictionary<string, string> FileNames;
         public Stream Reader;
         public Stream Writer;
         public PSARC(Stream Reader)
         {
             this.Reader = Reader;
         }
-        public PSARC(Stream Reader,Stream Writer)
+        public PSARC(Stream Reader, Stream Writer)
         {
             this.Reader = Reader;
             this.Writer = Writer;
@@ -37,18 +35,18 @@ namespace UnPSARC
         public void Read()
         {
             Reader.Seek(0, SeekOrigin.Begin);
-            ArchiveMagic = Reader.ReadString(4); //PSAR
+            ArchiveMagic = Reader.ReadString(4);
             if (ArchiveMagic != "PSAR") throw new Exception("Not valid PSARC file! Magic:" + ArchiveMagic);
             MajorVersion = Reader.ReadValueU16(Endian.Big);
             MinorVersion = Reader.ReadValueU16(Endian.Big);
-            CompressionType = Reader.ReadString(4); //oodle Or zlib
+            CompressionType = Reader.ReadString(4);
             if (CompressionType != "oodl" && CompressionType != "zlib") throw new Exception("Unsupported Compression method.");
             StartOFDatas = Reader.ReadValueS32(Endian.Big);
             SizeOfEntry = Reader.ReadValueS32(Endian.Big);
             FilesCount = Reader.ReadValueS32(Endian.Big);
             ZSizeCount = (StartOFDatas - (SizeOfEntry * FilesCount) + 32) / 2;
             BlockSize = Reader.ReadValueS32(Endian.Big);
-            Zero = Reader.ReadValueS32(Endian.Big); //Always Zero
+            Zero = Reader.ReadValueS32(Endian.Big);
             Entries = new TEntry[FilesCount];
             for (int index = 0; index < FilesCount; ++index)
             {
@@ -63,9 +61,19 @@ namespace UnPSARC
                 tzsize.Read(Reader);
                 ZSizes[index] = tzsize;
             }
-            FileNames = new List<string>(Encoding.UTF8.GetString(Archive.TryUnpack(Reader, Entries[0], ZSizes, BlockSize, CompressionType)).Split(new[] { "\n", "\0" }, StringSplitOptions.None));
-            FileNames.Insert(0, "FileNames.txt"); //because first file is always just file name
+            FileNames = new Dictionary<string, string>(LoadFileNames(Archive.TryUnpack(Reader, Entries[0], ZSizes, BlockSize, CompressionType)));
 
+        }
+        private Dictionary<string, string> LoadFileNames(byte[] file)
+        {
+            string[] Names = Encoding.UTF8.GetString(file).Split(new[] { "\n", "\0" }, StringSplitOptions.None);
+            Dictionary<string, string> ret = new Dictionary<string, string>();
+            ret.Add(BitConverter.ToString(new byte[16]), "Filenames.txt");
+            foreach (string Name in Names)
+            {
+                ret.Add(BitConverter.ToString(IOHelper.GetMD5(Name)), Name);
+            }
+            return ret;
         }
         public void Write(bool CloseStream)
         {
@@ -75,7 +83,7 @@ namespace UnPSARC
             Writer.WriteValueU16(MajorVersion, Endian.Big);
             Writer.WriteValueU16(MinorVersion, Endian.Big);
             Writer.WriteString(CompressionType);
-            Writer.WriteValueS32((int)Writer.Position + (SizeOfEntry* Entries.Length) + (ZSizes.Length*2), Endian.Big);
+            Writer.WriteValueS32((int)Writer.Position + (SizeOfEntry * Entries.Length) + (ZSizes.Length * 2), Endian.Big);
             Writer.WriteValueS32(SizeOfEntry, Endian.Big);
             Writer.WriteValueS32(Entries.Length, Endian.Big);
             Writer.WriteValueS32(BlockSize, Endian.Big);
