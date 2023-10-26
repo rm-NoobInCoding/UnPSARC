@@ -18,9 +18,8 @@ namespace UnPSARC
                 TEntry ThisEntry = Psarc.Entries[i];
                 if (ThisEntry.Offset == 0) continue;
 
-                if (!Psarc.FileNames.ContainsKey(BitConverter.ToString(ThisEntry.HashNames))) throw new Exception("Archive Contains a hash which is not in filenames Hash:");
+                if (!Psarc.FileNames.ContainsKey(BitConverter.ToString(ThisEntry.HashNames))) throw new Exception("Archive Contains a hash which is not in filenames table:");
                 string FileName = Psarc.FileNames[BitConverter.ToString(ThisEntry.HashNames)].Replace("/", "\\");
-                Console.WriteLine("- Exporting " + FileName + " ...");
                 byte[] UnpackedData = TryUnpack(Reader, Psarc.Entries[i], Psarc.ZSizes, Psarc.BlockSize, Psarc.CompressionType);
                 IOHelper.CheckFolderExists(FileName, Folder);
                 File.WriteAllBytes(@"\\?\" + Path.Combine(Folder, FileName), UnpackedData);

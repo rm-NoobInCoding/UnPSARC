@@ -51,9 +51,9 @@ namespace UnPSARC
         }
         public static void CheckFolderExists(string filename, string basefolder)
         {
-            if (!Directory.Exists(Path.GetDirectoryName(Path.Combine(basefolder, filename))))
+            if (!Directory.Exists(Path.GetDirectoryName(@"\\?\" + Path.Combine(basefolder, filename))))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(basefolder, filename)));
+                Directory.CreateDirectory(Path.GetDirectoryName(@"\\?\" + Path.Combine(basefolder, filename)));
             }
         }
     }
