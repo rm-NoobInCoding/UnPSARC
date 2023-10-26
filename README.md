@@ -8,9 +8,9 @@ UnPSARC tool helps you to extract the contents of PlayStation Archive file
 
 
 ## Tested Games ##
--All versions of Uncharted (PS3 Not tested)
--All versions of Last Of Us (PS3 Not tested)
-(Other games that use psarc format will probably be compatible)
+- All versions of Uncharted (PS3 Not tested)
+- All versions of Last Of Us (PS3 Not tested)
+- (Other games that use psarc format will probably be compatible)
 
 
 ## How to use it ##
