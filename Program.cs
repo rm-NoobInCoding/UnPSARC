@@ -147,7 +147,7 @@ namespace UnPSARC
                 process.BeginErrorReadLine();
                 process.WaitForExit();
             }
-            File.Delete("r.exe");
+            File.Delete(Path.Combine(contentFolderPath, "r.exe"));
 
 
         }
