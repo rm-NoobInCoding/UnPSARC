@@ -1,10 +1,11 @@
 # UnPSARC
-Archive Unpacker For PlayStation Archive files (PSARC) that mostly used by Naughty Dog.
+Archive Unpacker/Packer For PlayStation Archive files (PSARC) that mostly used by Naughty Dog.
 
 
 
 ## What does this tool do? ##
 UnPSARC tool helps you to extract the contents of PlayStation Archive file
+and packing contents into a new psarc
 
 
 ## Tested Games ##
