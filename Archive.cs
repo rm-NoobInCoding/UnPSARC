@@ -20,21 +20,22 @@ namespace UnPSARC
 
                 if (!Psarc.FileNames.ContainsKey(BitConverter.ToString(ThisEntry.HashNames))) throw new Exception("Archive Contains a hash which is not in filenames table:");
                 string FileName = Psarc.FileNames[BitConverter.ToString(ThisEntry.HashNames)].Replace("/", "\\");
-                byte[] UnpackedData = TryUnpack(Reader, Psarc.Entries[i], Psarc.ZSizes, Psarc.BlockSize, Psarc.CompressionType);
+                if (FileName.StartsWith("\\")) FileName = FileName.Remove(0, 1);
+                byte[] UnpackedData = TryUnpack(Psarc.Reader, Psarc.Entries[i], Psarc.ZSizes, Psarc.BlockSize, Psarc.CompressionType);
                 IOHelper.CheckFolderExists(FileName, Folder);
                 File.WriteAllBytes(@"\\?\" + Path.Combine(Folder, FileName), UnpackedData);
                 Console.WriteLine("[" + i + "] " + FileName + " Exported!");
 
             }
             Console.WriteLine("Unpacking done! | " + Psarc.FilesCount + " File Exported");
-            Console.WriteLine("Press Any Key To Continue...");
-            Console.ReadKey();
+            //Console.WriteLine("Press Any Key To Continue...");
+            //Console.ReadKey();
 
         }
 
         public static byte[] TryUnpack(Stream Reader, TEntry ThisEntry, TZSize[] ZSizes, int BlockSize, string CompressionType)
         {
-            int RemainingSize = ThisEntry.UncompressedSize;
+            long RemainingSize = ThisEntry.UncompressedSize;
             int ZSizeIndex = ThisEntry.ZSizeIndex;
             long BlockOffset = ThisEntry.Offset;
             Stream MEMORY_FILE = new MemoryStream();

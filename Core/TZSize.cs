@@ -17,9 +17,5 @@ namespace UnPSARC
         {
             ZSize = Reader.ReadValueU16(Endian.Big);
         }
-        public void Write(Stream Writer)
-        {
-            Writer.WriteValueU16((ushort)ZSize);
-        }
     }
 }

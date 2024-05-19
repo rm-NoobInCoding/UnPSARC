@@ -36,11 +36,26 @@ namespace UnPSARC
         {
             Reader.Seek(0, SeekOrigin.Begin);
             ArchiveMagic = Reader.ReadString(4);
+            if (ArchiveMagic == "DSAR")
+            {
+                Console.WriteLine("Archive is Compressed (DSAR), trying to Decompress...");
+                Reader = DirectStorage.Decompressor.Decompress(Reader);
+                Reader.Seek(0, SeekOrigin.Begin);
+                ArchiveMagic = Reader.ReadString(4);
+            }
+
             if (ArchiveMagic != "PSAR") throw new Exception("Not valid PSARC file! Magic:" + ArchiveMagic);
             MajorVersion = Reader.ReadValueU16(Endian.Big);
             MinorVersion = Reader.ReadValueU16(Endian.Big);
             CompressionType = Reader.ReadString(4);
-            if (CompressionType != "oodl" && CompressionType != "zlib") throw new Exception("Unsupported Compression method.");
+            if (CompressionType != "oodl" && CompressionType != "zlib") throw new Exception("Unsupported Compression method : " + CompressionType);
+            if (CompressionType == "oodl" && !Program.oodleExist)
+            {
+                Console.WriteLine("'oo2core_9_win64.dll' does not exist in the current application path!!!");
+                Console.WriteLine("To fix this, copy the dll from your game directory to the same directory that UnPSARC.exe is stored.");
+                return;
+            }
+
             StartOFDatas = Reader.ReadValueS32(Endian.Big);
             SizeOfEntry = Reader.ReadValueS32(Endian.Big);
             FilesCount = Reader.ReadValueS32(Endian.Big);
@@ -74,28 +89,6 @@ namespace UnPSARC
                 ret.Add(BitConverter.ToString(IOHelper.GetMD5(Name)), Name);
             }
             return ret;
-        }
-        public void Write(bool CloseStream)
-        {
-            Writer.SetLength(0);
-            Writer.Seek(0, SeekOrigin.Begin);
-            Writer.WriteString(ArchiveMagic);
-            Writer.WriteValueU16(MajorVersion, Endian.Big);
-            Writer.WriteValueU16(MinorVersion, Endian.Big);
-            Writer.WriteString(CompressionType);
-            Writer.WriteValueS32((int)Writer.Position + (SizeOfEntry * Entries.Length) + (ZSizes.Length * 2), Endian.Big);
-            Writer.WriteValueS32(SizeOfEntry, Endian.Big);
-            Writer.WriteValueS32(Entries.Length, Endian.Big);
-            Writer.WriteValueS32(BlockSize, Endian.Big);
-            Writer.WriteValueS32(Zero, Endian.Big);
-            for (int index = 0; index < Entries.Length; ++index)
-                Entries[index].Write(Writer);
-            for (int index = 0; index < ZSizes.Length; ++index)
-                ZSizes[index].Write(Writer);
-            if (CloseStream) Writer.Close();
-
-
-
         }
 
     }

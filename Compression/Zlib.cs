@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.IO;
 using System.IO.Compression;
-using System.IO;
 
 namespace UnPSARC
 {
@@ -16,6 +15,7 @@ namespace UnPSARC
                 zlib.CopyTo(output);
                 zlib.Dispose();
             }
+            input.Dispose();
 
             return output.ToArray();
         }
