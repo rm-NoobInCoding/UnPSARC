@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Gibbed.IO;
 using System.IO;
-using System.Linq;
-using Gibbed.IO;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UnPSARC
 {
