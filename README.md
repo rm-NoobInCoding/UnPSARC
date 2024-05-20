@@ -1,15 +1,17 @@
 # UnPSARC
-Archive Unpacker For PlayStation Archive files (PSARC) that mostly used by Naughty Dog.
+Archive Unpacker/Packer For PlayStation Archive files (PSARC) that mostly used by Naughty Dog.
 
 
 
 ## What does this tool do? ##
 UnPSARC tool helps you to extract the contents of PlayStation Archive file
+and packing contents into a new psarc
 
 
 ## Tested Games ##
 - All versions of Uncharted (PS3 Not tested)
 - All versions of Last Of Us (PS3 Not tested)
+- Ghost of Tsushima PC version
 - (Other games that use psarc format will probably be compatible)
 
 
