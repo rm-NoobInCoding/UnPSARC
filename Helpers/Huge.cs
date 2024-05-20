@@ -3,7 +3,7 @@ using System.IO;
 
 namespace UnPSARC.Helpers
 {
-    class HugeMemoryStream : Stream
+    public class HugeMemoryStream : Stream
     {
         #region Fields
 
