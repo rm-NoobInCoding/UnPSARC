@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
+using System;
+using System.IO;
 using System.IO.Compression;
+using UnPSARC.Helpers;
 
 namespace UnPSARC
 {
@@ -18,6 +21,18 @@ namespace UnPSARC
             input.Dispose();
 
             return output.ToArray();
+        }
+        public static byte[] DecompressZlibStream(byte[] Data)
+        {
+            var compressedStream = new MemoryStream(Data);
+            var decompressedStream = new HugeMemoryStream();
+            using (var zlibStream = new InflaterInputStream(compressedStream))
+            {
+                zlibStream.CopyTo(decompressedStream);
+            }
+            decompressedStream.Position = 0;
+
+            return decompressedStream.ToByteArray();
         }
     }
 }
