@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using UnPSARC.Helpers;
 
 namespace UnPSARC
 {
@@ -76,7 +77,8 @@ namespace UnPSARC
                 tzsize.Read(Reader);
                 ZSizes[index] = tzsize;
             }
-            FileNames = new Dictionary<string, string>(LoadFileNames(Archive.TryUnpack(Reader, Entries[0], ZSizes, BlockSize, CompressionType)));
+            Archive.TryUnpack(Reader, out HugeMemoryStream filenamebuffer, Entries[0], ZSizes, BlockSize, CompressionType);
+            FileNames = new Dictionary<string, string>(LoadFileNames(filenamebuffer.ToByteArray()));
 
         }
         private Dictionary<string, string> LoadFileNames(byte[] file)
