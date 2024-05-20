@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using UnPSARC.Helpers;
 
 namespace UnPSARC
@@ -124,7 +125,7 @@ namespace UnPSARC
                 RedirectStandardError = true,
                 WorkingDirectory = contentFolderPath,
                 UseShellExecute = false,
-                CreateNoWindow = true
+                CreateNoWindow = true,
             };
             using (var process = new Process { StartInfo = psi })
             {
@@ -142,12 +143,14 @@ namespace UnPSARC
                         Console.Error.WriteLine(e.Data);
                     }
                 };
+
                 process.Start();
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
                 process.WaitForExit();
+                File.Delete(Path.Combine(contentFolderPath, "r.exe"));
             }
-            File.Delete(Path.Combine(contentFolderPath, "r.exe"));
+
 
 
         }
