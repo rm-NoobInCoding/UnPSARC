@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using UnPSARC.Helpers;
 
 namespace UnPSARC
@@ -77,7 +76,7 @@ namespace UnPSARC
                         UnpackArchiveFile(args[0], outputName);
                     }
                 }
-            }      
+            }
             else if (isDirectory && !isFile)
             {
                 if (File.Exists(Path.Combine(args[0], "Filenames.txt")))

@@ -22,8 +22,14 @@ namespace UnPSARC.DirectStorage
                 long offsetCom = fs.ReadValueS64();
                 int sizeDec = fs.ReadValueS32();
                 int sizeCom = fs.ReadValueS32();
+                int CompType = fs.ReadByte();
+                fs.ReadBytes(7);
+                if(sizeCom == 0) //padding
+                {
+                    wt.WriteBytes(new byte[sizeDec]);
+                    continue;
 
-                fs.ReadBytes(8);
+                }
                 long back_ = fs.Position;
 
                 fs.Seek(offsetCom, SeekOrigin.Begin);
@@ -31,7 +37,11 @@ namespace UnPSARC.DirectStorage
                 var buffer = fs.ReadBytes(sizeCom);
 
                 var target = new byte[sizeDec];
-                var decoded = LZ4Codec.Decode(buffer, 0, buffer.Length, target, 0, target.Length);
+                if (CompType == 0)
+                    target = buffer;
+                else
+                    LZ4Codec.Decode(buffer, 0, buffer.Length, target, 0, target.Length);
+                
                 fs.Seek(back_, SeekOrigin.Begin);
                 wt.WriteBytes(target);
             }
