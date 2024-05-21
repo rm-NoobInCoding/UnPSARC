@@ -36,6 +36,7 @@ namespace UnPSARC
                 catch (Exception ex)
                 {
                     Console.WriteLine("[" + i + "] ---" + FileName + " Cannot Exported! Error:" + ex.Message);
+                    Console.ReadLine();
                     FailedFiles++;
                 }
 
@@ -78,7 +79,7 @@ namespace UnPSARC
                 BlockOffset += (uint)CompressedSize;
                 RemainingSize -= BlockSize;
             }
-
+            MEMORY_FILE.Position = 0;
             Writer = (HugeMemoryStream)MEMORY_FILE;
         }
 
