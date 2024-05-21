@@ -37,7 +37,7 @@ namespace UnPSARC
                 {
                     Console.WriteLine("[" + i + "] ---" + FileName + " Cannot Exported! Error:" + ex.Message);
                     Console.WriteLine("Press any key to continue unpacking");
-                    Console.ReadLine();
+                    Console.ReadKey();
                     FailedFiles++;
                 }
 
