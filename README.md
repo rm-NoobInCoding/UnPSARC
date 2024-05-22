@@ -1,28 +1,37 @@
 # UnPSARC
-Archive Unpacker/Packer For PlayStation Archive files (PSARC) that mostly used by Naughty Dog.
+
+**UnPSARC** is a versatile tool designed for the extraction and packaging of PlayStation Archive (PSARC) files, commonly utilized by Naughty Dog games.
+
+## Features
+- **Extract**: Unpack the contents of PSARC files with ease.
+- **Package**: Create new PSARC files from extracted content.
+- **User-Friendly**: Simple drag-and-drop functionality.
+
+## Compatibility
+UnPSARC has been tested and confirmed to work with the following games:
+- **Uncharted** series (Note: PS3 version not tested)
+- **The Last Of Us** series (Note: PS3 version not tested)
+- **Ghost of Tsushima** (PC version)
+- Potentially compatible with other games using the PSARC format.
+
+## Usage Instructions
+- For a list of commands and options, run `UnPSARC.exe` without any arguments.
+### uncharted game 
+1. Copy `oo2core_9_win64.dll` from your game directory (e.g., Uncharted) to the directory containing `UnPSARC.exe`.
+2. Drag and drop the PSARC file onto `UnPSARC.exe` to initiate extraction.
 
 
-
-## What does this tool do? ##
-UnPSARC tool helps you to extract the contents of PlayStation Archive file
-and packing contents into a new psarc
+### Other games that use psarc format
+- Drag and drop the PSARC file onto `UnPSARC.exe` to initiate extraction.
 
 
-## Tested Games ##
-- All versions of Uncharted (PS3 Not tested)
-- All versions of Last Of Us (PS3 Not tested)
-- Ghost of Tsushima PC version
-- (Other games that use psarc format will probably be compatible)
+## Acknowledgments
+- DKDave
+- Rick Gibbed
+- Chandler Threepwood
+- fillmsm
+
+## License
+This project is licensed under the MIT License
 
 
-## How to use it ##
-First you have to copy the **oo2core_9_win64.dll** from your uncharted game directory to the same directory that UnPSARC.exe is stored.
-Then you can simply drag the psarc file onto the tool to extract its content.
-Also, you can run the tool without arguments to see its usage.
-
-
-### Thanks to ###
--DKDave
--Rick Gibbed
--Chandler Threepwood
--fillmsm
