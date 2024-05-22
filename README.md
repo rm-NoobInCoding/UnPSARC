@@ -1,28 +1,27 @@
 # UnPSARC
 
-**UnPSARC** is a versatile tool designed for the extraction and packaging of PlayStation Archive (PSARC) files, commonly utilized by Naughty Dog games.
+**UnPSARC** is a comprehensive tool tailored for the manipulation of PlayStation Archive (PSARC) files, which are widely used by Naughty Dog games for data archiving.
 
-## Features
-- **Extract**: Unpack the contents of PSARC files with ease.
-- **Package**: Create new PSARC files from extracted content.
+## Key Features
+- **Extraction**: Effortlessly unpack the contents of PSARC files.
+- **Packaging**: Seamlessly create new PSARC files from your directories.
 
-## Compatibility
-UnPSARC has been tested and confirmed to work with the following games:
-- **Uncharted** series (Note: PS3 version not tested)
-- **The Last Of Us** series (Note: PS3 version not tested)
+## Game Compatibility
+- **Uncharted** series (PS3 version compatibility is untested)
+- **The Last Of Us** series (PS3 version compatibility is untested)
 - **Ghost of Tsushima** (PC version)
-- Potentially compatible with other games using the PSARC format.
+- Other titles employing the PSARC format may also be supported.
 
-## Usage Instructions
-- For a list of commands and options, run `UnPSARC.exe` without any arguments.
-### uncharted game 
-1. Copy `oo2core_9_win64.dll` from your game directory (e.g., Uncharted) to the directory containing `UnPSARC.exe`.
-2. Drag and drop the PSARC file onto `UnPSARC.exe` to initiate extraction.
+## Getting Started
+To view a comprehensive list of commands and options, execute `UnPSARC.exe` in your command line without any parameters.
 
+### Instructions for Uncharted Series
+1. Transfer `oo2core_9_win64.dll` from the Uncharted game directory to the same folder as `UnPSARC.exe`.
+2. Simply drag and drop the desired PSARC file onto `UnPSARC.exe` to begin the extraction process.
 
-### Other games that use psarc format
-- Drag and drop the PSARC file onto `UnPSARC.exe` to initiate extraction.
-
+### Instructions for Other Titles
+For games that utilize the PSARC format:
+- Drag and drop the PSARC file onto `UnPSARC.exe` to start extracting files.
 
 ## Acknowledgments
 - DKDave
@@ -31,6 +30,5 @@ UnPSARC has been tested and confirmed to work with the following games:
 - fillmsm
 
 ## License
-This project is licensed under the MIT License
-
+UnPSARC is open-sourced under the MIT License.
 
