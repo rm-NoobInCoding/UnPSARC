@@ -5,7 +5,6 @@
 ## Features
 - **Extract**: Unpack the contents of PSARC files with ease.
 - **Package**: Create new PSARC files from extracted content.
-- **User-Friendly**: Simple drag-and-drop functionality.
 
 ## Compatibility
 UnPSARC has been tested and confirmed to work with the following games:
