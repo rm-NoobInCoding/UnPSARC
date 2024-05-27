@@ -1,28 +1,34 @@
 # UnPSARC
-Archive Unpacker/Packer For PlayStation Archive files (PSARC) that mostly used by Naughty Dog.
 
+**UnPSARC** is a comprehensive tool tailored for the manipulation of PlayStation Archive (PSARC) files, which are widely used by Naughty Dog games for data archiving.
 
+## Key Features
+- **Extraction**: Effortlessly unpack the contents of PSARC files.
+- **Packaging**: Seamlessly create new PSARC files from your directories.
 
-## What does this tool do? ##
-UnPSARC tool helps you to extract the contents of PlayStation Archive file
-and packing contents into a new psarc
+## Game Compatibility
+- **Uncharted** series (PS3 version compatibility is untested)
+- **The Last Of Us** series (PS3 version compatibility is untested)
+- **Ghost of Tsushima** (PC version)
+- Other titles employing the PSARC format may also be supported.
 
+## Getting Started
+To view a comprehensive list of commands and options, execute `UnPSARC.exe` in your command line without any parameters.
 
-## Tested Games ##
-- All versions of Uncharted (PS3 Not tested)
-- All versions of Last Of Us (PS3 Not tested)
-- Ghost of Tsushima PC version
-- (Other games that use psarc format will probably be compatible)
+### Instructions for Uncharted Series
+1. Transfer `oo2core_9_win64.dll` from the Uncharted game directory to the same folder as `UnPSARC.exe`.
+2. Simply drag and drop the desired PSARC file onto `UnPSARC.exe` to begin the extraction process.
 
+### Instructions for Other Titles
+For games that utilize the PSARC format:
+- Drag and drop the PSARC file onto `UnPSARC.exe` to start extracting files.
 
-## How to use it ##
-First you have to copy the **oo2core_9_win64.dll** from your uncharted game directory to the same directory that UnPSARC.exe is stored.
-Then you can simply drag the psarc file onto the tool to extract its content.
-Also, you can run the tool without arguments to see its usage.
+## Acknowledgments
+- DKDave
+- Rick Gibbed
+- Chandler Threepwood
+- fillmsm
 
+## License
+UnPSARC is open-sourced under the MIT License.
 
-### Thanks to ###
--DKDave
--Rick Gibbed
--Chandler Threepwood
--fillmsm
