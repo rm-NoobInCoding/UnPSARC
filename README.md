@@ -15,15 +15,15 @@
 ## Getting Started
 To view a comprehensive list of commands and options, execute `UnPSARC.exe` in your command line without any parameters.
 
-### Instructions for Uncharted Series
-1. Transfer `oo2core_9_win64.dll` from the Uncharted game directory to the same folder as `UnPSARC.exe`.
+### Instructions for Uncharted Series (or other games that use Oodle for compression)
+1. Transfer `oo2core_9_win64.dll` from the game directory to the same folder as `UnPSARC.exe`. You can download this dll from internet too.
 2. Simply drag and drop the desired PSARC file onto `UnPSARC.exe` to begin the extraction process.
 
 ### Instructions for Other Titles
 For games that utilize the PSARC format:
 - Drag and drop the PSARC file onto `UnPSARC.exe` to start extracting files.
 
-## Acknowledgments
+## Thanks to
 - DKDave
 - Rick Gibbed
 - Chandler Threepwood
