@@ -6,16 +6,24 @@ namespace UnPSARC
 {
     public static class Zlib
     {
-        public static byte[] Decompress(byte[] Data)
+        public static byte[] Decompress(byte[] Data,int decompressedSize)
         {
             var compressedStream = new MemoryStream(Data);
             var decompressedStream = new HugeMemoryStream();
-            using (var zlibStream = new InflaterInputStream(compressedStream))
+            try
             {
-                zlibStream.CopyTo(decompressedStream);
-            }
-            decompressedStream.Position = 0;
+                using (var zlibStream = new InflaterInputStream(compressedStream))
+                {
+                    zlibStream.CopyTo(decompressedStream);
+                }
+                decompressedStream.Position = 0;
 
+            }
+            catch
+            {
+                return new byte[decompressedSize];
+            }
+                
             return decompressedStream.ToByteArray();
         }
     }
