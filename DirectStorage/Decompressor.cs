@@ -7,6 +7,7 @@ namespace UnPSARC.DirectStorage
 {
     internal class Decompressor
     {
+
         public static Stream Decompress(Stream compressedStream)
         {
             Stream fs = compressedStream;
@@ -24,7 +25,7 @@ namespace UnPSARC.DirectStorage
                 int sizeCom = fs.ReadValueS32();
                 int CompType = fs.ReadByte();
                 fs.ReadBytes(7);
-                if(sizeCom == 0) //padding
+                if (sizeCom == 0) //padding
                 {
                     wt.WriteBytes(new byte[sizeDec]);
                     continue;
@@ -41,7 +42,7 @@ namespace UnPSARC.DirectStorage
                     target = buffer;
                 else
                     LZ4Codec.Decode(buffer, 0, buffer.Length, target, 0, target.Length);
-                
+
                 fs.Seek(back_, SeekOrigin.Begin);
                 wt.WriteBytes(target);
             }

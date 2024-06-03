@@ -23,7 +23,7 @@ namespace UnPSARC
             byte[] Block = s.ReadBytes(ZSize);
             byte[] log = { };
             if (CompressionType == "oodl" && magic == 0x68C) log = Oodle.Decompress(Block, (int)size);
-            if (CompressionType == "zlib" && magic == 0xDA78) log = Zlib.Decompress(Block);
+            if (CompressionType == "zlib" && magic == 0xDA78) log = Zlib.Decompress(Block, (int)size);
             if (log.Length == 0) log = Block;
             s.Seek(pos, SeekOrigin.Begin);
             return log;

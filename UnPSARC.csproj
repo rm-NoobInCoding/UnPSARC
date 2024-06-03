@@ -151,7 +151,7 @@
     <Compile Include="Archive.cs" />
     <Compile Include="DirectStorage\Decompressor.cs" />
     <Compile Include="Helpers\CommendHelper.cs" />
-    <Compile Include="Helpers\Huge.cs" />
+    <Compile Include="Helpers\HugeMemoryStream.cs" />
     <Compile Include="Helpers\IOHelper.cs" />
     <Compile Include="Compression\Oodle.cs" />
     <Compile Include="Packer.Designer.cs">
