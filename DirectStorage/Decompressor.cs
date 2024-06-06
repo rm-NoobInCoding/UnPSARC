@@ -19,7 +19,7 @@ namespace UnPSARC.DirectStorage
 
             for (int i = 0; i < count; i++)
             {
-                long offsetDec = fs.ReadValueS64();
+                fs.ReadValueS64(); //Decompressed offset
                 long offsetCom = fs.ReadValueS64();
                 int sizeDec = fs.ReadValueS32();
                 int sizeCom = fs.ReadValueS32();
@@ -29,7 +29,6 @@ namespace UnPSARC.DirectStorage
                 {
                     wt.WriteBytes(new byte[sizeDec]);
                     continue;
-
                 }
                 long back_ = fs.Position;
 
