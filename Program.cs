@@ -150,8 +150,6 @@ namespace UnPSARC
                 File.Delete(Path.Combine(contentFolderPath, "r.exe"));
             }
 
-
-
         }
 
         private static void UnpackArchiveFile(string inputPath, string outputDirectory)
