@@ -1,6 +1,8 @@
 # UnPSARC
 
 **UnPSARC** is a comprehensive tool tailored for the manipulation of PlayStation Archive (PSARC) files, which are widely used by Naughty Dog games for data archiving.
+> [!NOTE]
+> This tool is only for psarc files. The files inside the archive are not within the scope of this tool. Please do not create an issue for these files!
 
 ## Key Features
 - **Extraction**: Effortlessly unpack the contents of PSARC files.
