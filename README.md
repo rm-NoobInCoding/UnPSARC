@@ -11,7 +11,7 @@
 ## Game Compatibility
 - **Uncharted** series (PS3 version compatibility is untested)
 - **The Last Of Us** series (PS3 version compatibility is untested)
-- **Ghost of Tsushima** (PC version)
+- **Ghost of Tsushima**
 - Other titles employing the PSARC format may also be supported.
 
 ## Getting Started
