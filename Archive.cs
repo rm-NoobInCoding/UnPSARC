@@ -7,6 +7,7 @@ namespace UnPSARC
 {
     public class Archive
     {
+        public static string FNameFileHash = BitConverter.ToString(new byte[16]);
 
         public static void Unpack(Stream ArchiveRaw, string Folder)
         {
@@ -19,10 +20,10 @@ namespace UnPSARC
             {
                 TEntry ThisEntry = Psarc.Entries[i];
 
-                if (ThisEntry.Offset == 0)
-                    continue;
-
                 string filenameHash = BitConverter.ToString(ThisEntry.HashNames);
+
+                if (ThisEntry.Offset == 0 || filenameHash == FNameFileHash)
+                    continue;
 
                 if (!Psarc.FileNames.ContainsKey(filenameHash))
                     throw new Exception("Archive Contains a hash which is not in filenames table: " + filenameHash);

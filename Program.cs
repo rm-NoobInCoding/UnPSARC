@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using UnPSARC.Helpers;
@@ -79,29 +80,21 @@ namespace UnPSARC
             }
             else if (isDirectory && !isFile)
             {
-                if (File.Exists(Path.Combine(args[0], "Filenames.txt")))
+                if (outputName == null)
                 {
-                    if (outputName == null)
-                    {
-                        Console.WriteLine($"Packing {args[0]} to {Path.GetFileNameWithoutExtension(args[0]) + ".psarc"}");
-                        PackArchiveFile(args[0], "../" + Path.GetFileNameWithoutExtension(args[0]) + ".psarc");
-                    }
-                    else
-                    {
-                        if (!CommendHelper.IsFullPath(outputName))
-                        {
-                            if (outputName.StartsWith("\\")) outputName = outputName.Remove(0, 1);
-                            outputName = Path.Combine(Environment.CurrentDirectory, outputName);
-                        }
-                        Console.WriteLine($"Packing {args[0]} to {outputName}");
-                        PackArchiveFile(args[0], outputName);
-
-                    }
+                    Console.WriteLine($"Packing {args[0]} to {Path.GetFileNameWithoutExtension(args[0]) + ".psarc"}");
+                    PackArchiveFile(args[0], "../" + Path.GetFileNameWithoutExtension(args[0]) + ".psarc");
                 }
                 else
                 {
-                    Console.WriteLine("Repack folder is not correct. (The folder must contain filenames.txt file)");
-                    PrintUsage();
+                    if (!CommendHelper.IsFullPath(outputName))
+                    {
+                        if (outputName.StartsWith("\\")) outputName = outputName.Remove(0, 1);
+                        outputName = Path.Combine(Environment.CurrentDirectory, outputName);
+                    }
+                    Console.WriteLine($"Packing {args[0]} to {outputName}");
+                    PackArchiveFile(args[0], outputName);
+
                 }
 
             }
@@ -114,7 +107,8 @@ namespace UnPSARC
 
         private static void PackArchiveFile(string contentFolderPath, string outputFilename)
         {
-            File.WriteAllText(Path.Combine(contentFolderPath, "Filenames.txt"), File.ReadAllText(Path.Combine(contentFolderPath, "Filenames.txt")).Replace("\0", "\n").Replace("\n/", "\n"));
+
+            File.WriteAllText(Path.Combine(contentFolderPath, "Filenames.txt"), MakeFileNameTable(contentFolderPath));
             File.WriteAllBytes(Path.Combine(contentFolderPath, "r.exe"), Packer.psarc);
             ProcessStartInfo psi = new ProcessStartInfo
             {
@@ -148,8 +142,22 @@ namespace UnPSARC
                 process.BeginErrorReadLine();
                 process.WaitForExit();
                 File.Delete(Path.Combine(contentFolderPath, "r.exe"));
+                File.Delete(Path.Combine(contentFolderPath, "Filenames.txt"));
             }
 
+        }
+
+        private static string MakeFileNameTable(string contentFolderPath)
+        {
+            List<string> files = new List<string>();
+            foreach (string fname in Directory.GetFiles(contentFolderPath, "*.*", SearchOption.AllDirectories))
+            {
+                if (Path.GetFileName(fname) == "Filenames.txt")
+                    continue;
+                string _ = fname.Replace(contentFolderPath + "\\", "").Replace("\\", "/");
+                files.Add(_);
+            }
+            return string.Join("\n", files);
         }
 
         private static void UnpackArchiveFile(string inputPath, string outputDirectory)

@@ -86,10 +86,7 @@ namespace UnPSARC
         private Dictionary<string, string> LoadFileNames(byte[] file)
         {
             string[] Names = Encoding.UTF8.GetString(file).Split(new[] { "\n", "\0" }, StringSplitOptions.None);
-            Dictionary<string, string> ret = new Dictionary<string, string>
-            {
-                { BitConverter.ToString(new byte[16]), "Filenames.txt" }
-            };
+            Dictionary<string, string> ret = new Dictionary<string, string>();
             foreach (string Name in Names)
             {
                 ret.Add(BitConverter.ToString(IOHelper.GetMD5(Name)), Name);
