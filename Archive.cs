@@ -13,6 +13,7 @@ namespace UnPSARC
         {
             Stream Reader = ArchiveRaw;
             PSARC Psarc = new PSARC(Reader);
+            Console.WriteLine("Files count: " + Psarc.FilesCount);
             Psarc.Read();
             int FailedFiles = 0;
 
@@ -25,10 +26,17 @@ namespace UnPSARC
                 if (ThisEntry.Offset == 0 || filenameHash == FNameFileHash)
                     continue;
 
+                string FileName;
                 if (!Psarc.FileNames.ContainsKey(filenameHash))
-                    throw new Exception("Archive Contains a hash which is not in filenames table: " + filenameHash);
+                {
+                    Console.WriteLine("Archive Contains a hash which is not in filenames table: " + filenameHash);
+                    FileName = "_Unknowns\\" + filenameHash.Replace("-", "") + ".bin";
+                }
+                else
+                {
+                    FileName = Psarc.FileNames[filenameHash].Replace("/", "\\");
+                }
 
-                string FileName = Psarc.FileNames[filenameHash].Replace("/", "\\");
 
                 if (FileName.StartsWith("\\"))
                     FileName = FileName.Remove(0, 1);
@@ -45,7 +53,10 @@ namespace UnPSARC
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("[" + i + "] ---" + FileName + " Cannot Exported! Error:" + ex.Message);
+                    var _baseforgroud = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("[" + i + "] " + FileName + " Cannot Exported! Error:" + ex.Message);
+                    Console.ForegroundColor = _baseforgroud;
                     Console.WriteLine("Press any key to continue unpacking");
                     Console.ReadKey();
                     FailedFiles++;
