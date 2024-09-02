@@ -90,6 +90,7 @@ namespace UnPSARC
             foreach (string Name in Names)
             {
                 ret.Add(BitConverter.ToString(IOHelper.GetMD5(Name)), Name);
+                ret.Add(BitConverter.ToString(IOHelper.GetMD5(Name.ToUpper())), Name.ToUpper()); // Issue #20
             }
             return ret;
         }
