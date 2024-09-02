@@ -1,5 +1,7 @@
 ﻿using Gibbed.IO;
+using System;
 using System.IO;
+using System.Xml.Linq;
 
 namespace UnPSARC
 {
@@ -46,6 +48,10 @@ namespace UnPSARC
 
                 return hashBytes;
             }
+        }
+        public static string GetMD5String(string input)
+        {
+            return BitConverter.ToString(GetMD5(input));
         }
         public static void CheckFolderExists(string filename, string basefolder)
         {
