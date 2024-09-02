@@ -89,11 +89,20 @@ namespace UnPSARC
             Dictionary<string, string> ret = new Dictionary<string, string>();
             foreach (string Name in Names)
             {
-                ret.Add(BitConverter.ToString(IOHelper.GetMD5(Name)), Name);
-                ret.Add(BitConverter.ToString(IOHelper.GetMD5(Name.ToUpper())), Name.ToUpper()); // Issue #20
+                if (!ret.ContainsKey(IOHelper.GetMD5String(Name)))
+                {
+                    ret.Add(BitConverter.ToString(IOHelper.GetMD5(Name)), Name);
+                }
+                if (!ret.ContainsKey(IOHelper.GetMD5String(Name.ToUpper())))
+                {
+                    ret.Add(BitConverter.ToString(IOHelper.GetMD5(Name.ToUpper())), Name.ToUpper());  // Issue #20
+                }
+                if (!ret.ContainsKey(IOHelper.GetMD5String(Name.ToLower())))
+                {
+                    ret.Add(BitConverter.ToString(IOHelper.GetMD5(Name.ToLower())), Name.ToLower());  // Mostly not needed
+                }
             }
             return ret;
         }
-
     }
 }
