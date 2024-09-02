@@ -13,8 +13,8 @@ namespace UnPSARC
         {
             Stream Reader = ArchiveRaw;
             PSARC Psarc = new PSARC(Reader);
-            Console.WriteLine("Files count: " + Psarc.FilesCount);
             Psarc.Read();
+            Console.WriteLine("Files count: " + Psarc.FilesCount);
             int FailedFiles = 0;
 
             for (int i = 0; i < Psarc.FilesCount; i++)
