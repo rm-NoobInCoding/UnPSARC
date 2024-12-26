@@ -1,7 +1,6 @@
 ﻿using Gibbed.IO;
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using UnPSARC.Helpers;
 
 namespace UnPSARC
