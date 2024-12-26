@@ -1,6 +1,7 @@
 ﻿using Gibbed.IO;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using UnPSARC.Helpers;
 
 namespace UnPSARC
@@ -45,7 +46,13 @@ namespace UnPSARC
                 {
                     TryUnpack(Psarc.Reader, out HugeMemoryStream FileWriter, Psarc.Entries[i], Psarc.ZSizes, Psarc.BlockSize, Psarc.CompressionType);
 					IOHelper.CheckFolderExists(FileName, Folder);
-                    Stream fileHandle = File.Open(Path.Combine(Folder, FileName), FileMode.Create, FileAccess.Write);
+                    Stream fileHandle;
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)){
+                    	fileHandle = File.Open(@"\\?\" + Path.Combine(Folder, FileName), FileMode.Create, FileAccess.Write);
+                    }
+                    else{
+                    	fileHandle = File.Open(Path.Combine(Folder, FileName), FileMode.Create, FileAccess.Write);
+                    }
                     FileWriter.CopyTo(fileHandle);
                     fileHandle.Close();
                     Console.WriteLine("[" + i + "] " + FileName + " Exported!");

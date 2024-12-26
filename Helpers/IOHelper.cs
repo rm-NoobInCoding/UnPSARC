@@ -1,6 +1,7 @@
 ﻿using Gibbed.IO;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Xml.Linq;
 
 namespace UnPSARC
@@ -55,10 +56,21 @@ namespace UnPSARC
         }
         public static void CheckFolderExists(string filename, string basefolder)
         {
-            if (!Directory.Exists(Path.GetDirectoryName(Path.Combine(basefolder, filename))))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(basefolder, filename)));
-            }
+        	if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        	{
+        		if (!Directory.Exists(Path.GetDirectoryName(@"\\?\" + Path.Combine(basefolder, filename))))
+        		{
+        			Directory.CreateDirectory(Path.GetDirectoryName(@"\\?\" + Path.Combine(basefolder, filename)));
+  	        	}
+        	}
+        	else
+        	{
+        		if (!Directory.Exists(Path.GetDirectoryName(Path.Combine(basefolder, filename))))
+        	    {
+        	    	Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(basefolder, filename)));
+        	  	}
+        	}
+            
         }
     }
 }
