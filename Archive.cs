@@ -1,6 +1,7 @@
 ﻿using Gibbed.IO;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using UnPSARC.Helpers;
 
 namespace UnPSARC
@@ -30,22 +31,22 @@ namespace UnPSARC
                 if (!Psarc.FileNames.ContainsKey(filenameHash))
                 {
                     Console.WriteLine("Archive Contains a hash which is not in filenames table: " + filenameHash);
-                    FileName = "_Unknowns\\" + filenameHash.Replace("-", "") + ".bin";
+                    FileName = "_Unknowns" + Path.DirectorySeparatorChar.ToString() + filenameHash.Replace("-", "") + ".bin";
                 }
                 else
                 {
-                    FileName = Psarc.FileNames[filenameHash].Replace("/", "\\");
+                    FileName = Psarc.FileNames[filenameHash].Replace("/", Path.DirectorySeparatorChar.ToString());
                 }
 
 
-                if (FileName.StartsWith("\\"))
+                if (FileName.StartsWith(Path.DirectorySeparatorChar.ToString()))
                     FileName = FileName.Remove(0, 1);
 
                 try
                 {
                     TryUnpack(Psarc.Reader, out HugeMemoryStream FileWriter, Psarc.Entries[i], Psarc.ZSizes, Psarc.BlockSize, Psarc.CompressionType);
-                    IOHelper.CheckFolderExists(FileName, Folder);
-                    Stream fileHandle = File.Open(@"\\?\" + Path.Combine(Folder, FileName), FileMode.Create, FileAccess.Write);
+					IOHelper.CheckFolderExists(FileName, Folder);
+                    Stream fileHandle = File.Open(Path.Combine(Folder, FileName), FileMode.Create, FileAccess.Write);
                     FileWriter.CopyTo(fileHandle);
                     fileHandle.Close();
                     Console.WriteLine("[" + i + "] " + FileName + " Exported!");
@@ -65,7 +66,6 @@ namespace UnPSARC
             }
 
             Console.WriteLine($"Unpacking done! | {Psarc.FilesCount - FailedFiles} of {Psarc.FilesCount} Files Exported");
-
         }
 
         public static void TryUnpack(Stream Reader, out HugeMemoryStream Writer, TEntry ThisEntry, TZSize[] ZSizes, int BlockSize, string CompressionType)
