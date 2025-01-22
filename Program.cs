@@ -24,7 +24,7 @@ namespace UnPSARC
         {
             string currentApplicationPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             string currentApplicationDirectory = Path.GetDirectoryName(currentApplicationPath);
-            string oodleLocation = currentApplicationDirectory + "\\oo2core_9_win64.dll";
+            string oodleLocation = Path.Combine(currentApplicationDirectory + "oo2core_9_win64.dll");
 
             return File.Exists(oodleLocation);
         }
@@ -67,7 +67,8 @@ namespace UnPSARC
                     {
                         string TempDir = Path.GetDirectoryName(args[0]);
                         if (TempDir == "") TempDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                        string customOutputDirectory = TempDir + "\\" + Path.GetFileNameWithoutExtension(args[0]) + "_Unpacked";
+                        string customOutputDirectory = Path.GetFileNameWithoutExtension(args[0]) + "_Unpacked";
+                        // string customOutputDirectory = Path.GetFileNameWithoutExtension(args[0]); // Extract to same folder instead
                         if (Directory.Exists(customOutputDirectory) == false)
                             Directory.CreateDirectory(customOutputDirectory);
                         UnpackArchiveFile(args[0], customOutputDirectory);
@@ -89,7 +90,7 @@ namespace UnPSARC
                 {
                     if (!CommendHelper.IsFullPath(outputName))
                     {
-                        if (outputName.StartsWith("\\")) outputName = outputName.Remove(0, 1);
+                        if (outputName.StartsWith(Path.DirectorySeparatorChar.ToString())) outputName = outputName.Remove(0, 1);
                         outputName = Path.Combine(Environment.CurrentDirectory, outputName);
                     }
                     Console.WriteLine($"Packing {args[0]} to {outputName}");
@@ -154,7 +155,7 @@ namespace UnPSARC
             {
                 if (Path.GetFileName(fname) == "Filenames.txt")
                     continue;
-                string _ = fname.Replace(contentFolderPath + "\\", "").Replace("\\", "/");
+                string _ = fname.Replace(contentFolderPath + Path.DirectorySeparatorChar.ToString(), "").Replace(Path.DirectorySeparatorChar.ToString(), "/");
                 files.Add(_);
             }
             return string.Join("\n", files);
