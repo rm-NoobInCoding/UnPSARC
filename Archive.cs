@@ -45,13 +45,14 @@ namespace UnPSARC
                 try
                 {
                     TryUnpack(Psarc.Reader, out HugeMemoryStream FileWriter, Psarc.Entries[i], Psarc.ZSizes, Psarc.BlockSize, Psarc.CompressionType);
-					IOHelper.CheckFolderExists(FileName, Folder);
+                    string outPath = Path.Combine(Folder, FileName);
+                    IOHelper.CheckFolderExists(FileName, Folder);
                     Stream fileHandle;
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)){
-                    	fileHandle = File.Open(@"\\?\" + Path.Combine(Folder, FileName), FileMode.Create, FileAccess.Write);
+                    	fileHandle = File.Open(@"\\?\" + outPath, FileMode.Create, FileAccess.Write);
                     }
                     else{
-                    	fileHandle = File.Open(Path.Combine(Folder, FileName), FileMode.Create, FileAccess.Write);
+                    	fileHandle = File.Open(outPath, FileMode.Create, FileAccess.Write);
                     }
                     FileWriter.CopyTo(fileHandle);
                     fileHandle.Close();

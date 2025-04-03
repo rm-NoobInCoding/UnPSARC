@@ -71,7 +71,7 @@ namespace UnPSARC
                         // string customOutputDirectory = Path.GetFileNameWithoutExtension(args[0]); // Extract to same folder instead
                         if (Directory.Exists(customOutputDirectory) == false)
                             Directory.CreateDirectory(customOutputDirectory);
-                        UnpackArchiveFile(args[0], customOutputDirectory);
+                        UnpackArchiveFile(args[0], Path.Combine(TempDir, customOutputDirectory));
                     }
                     else
                     {
