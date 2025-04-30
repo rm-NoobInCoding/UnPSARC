@@ -24,7 +24,7 @@ namespace UnPSARC
         {
             string currentApplicationPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             string currentApplicationDirectory = Path.GetDirectoryName(currentApplicationPath);
-            string oodleLocation = Path.Combine(currentApplicationDirectory + "oo2core_9_win64.dll");
+            string oodleLocation = Path.Combine(currentApplicationDirectory, "oo2core_9_win64.dll");
 
             return File.Exists(oodleLocation);
         }
